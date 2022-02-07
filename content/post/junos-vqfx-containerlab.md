@@ -10,14 +10,14 @@ In this post, we look at how Containerlab can be used to quickly spin up vQFX to
 
 ## What is Containerlab?
 
-Containerlab is an open source, network validation/testing platform that allows you to easily spin up network labs and manage end to end lab life cycle. It supports several network operating systems, across many vendors. As of this writing, it supports Nokia SR Linux, Juniper cPRD, Cumulus VX, Arista cEOS. Outside of these natively containerized operating systems, it also supports VM based devcies like Junipers vQFX and vMX, Nexus 9000v, IOS XRv, Arista vEOS and so on.
+Containerlab is an open source, network validation/testing platform that allows you to easily spin up network labs and manage end to end lab life cycle. It supports several network operating systems, across many vendors. As of this writing, it supports Nokia SR Linux, Juniper cRPD, Cumulus VX, Arista cEOS. Outside of these natively containerized operating systems, it also supports VM based devcies like Junipers vQFX and vMX, Nexus 9000v, IOS XRv, Arista vEOS and so on.
 
 More information can be found on their homepage - https://containerlab.srlinux.dev/
 
 ## Building the vQFX docker container
 ### Downloading vrnetlab
 
-To build VM based containers, you need to download a fork of vrnetlab that was modified for this (https://github.com/hellt/vrnetlab). It essentially packages the VM inside a container. Simply gitclone the repo to your working directory (clear instructions are provided [here](https://containerlab.srlinux.dev/manual/vrnetlab/#building-vrnetlab-images).
+To build VM based containers, you need to download a fork of vrnetlab that was modified for this (https://github.com/hellt/vrnetlab). It essentially packages the VM inside a container. Simply gitclone the repo to your working directory (clear instructions are provided [here](https://containerlab.srlinux.dev/manual/vrnetlab/#building-vrnetlab-images)).
 
 ```
 root@aninchat-ubuntu:~# git clone https://github.com/hellt/vrnetlab .
@@ -138,7 +138,7 @@ docker-build-common: docker-clean-build docker-pre-build
 	(cd docker; docker build --build-arg http_proxy=$(http_proxy) --build-arg https_proxy=$(https_proxy) --build-arg RE_IMAGE=$(IMAGE) --build-arg PFE_IMAGE=$(PFE_IMAGE) -t $(REGISTRY)vr-$(VR_NAME):$(VERSION) .)
 ```
 
-As part of the Makefile, we're also copying over files from vrnetlab/common/ to the 'Docker' folder under vQFX. These files are the healthcheck and vrnetlab python files:
+The Makefile is essentially looking for your vQFX images (there needs to be two - one PFE and one RE image). This version of Containerlab also has support for qcow/qcow2 based file systems (some older versions only supported vmdk files). As part of the Makefile, we're also copying over files from vrnetlab/common/ to the 'Docker' folder under vQFX. These files are the healthcheck and vrnetlab python files:
 
 ```
 root@aninchat-ubuntu:~/vrnetlab/vqfx# ls -l ../common/
@@ -147,7 +147,7 @@ total 32
 -rw-r--r-- 1 root root 24925 Feb  5 15:41 vrnetlab.py
 ```
 
-The Makefile essentially builds the docker image for vQFX. 
+Then finally, the Makefile calls docker build to build the image itself. 
 
 ### Start the vQFX docker image build
 
@@ -256,6 +256,52 @@ ubuntu             20.04       54c9d81cbb44   3 days ago      72.8MB
 ```
 
 > Note: Make sure to stay on the newer versions of containerlab because some of the older versions do not support building a docker image from qcow files (the makefile does not have code for this).
+
+### What's happening behind the scenes
+
+So, let's break down what's actually happening. Like a Makefile, there is a Dockerfile that contains instructions on how to build the docker image itself (for vQFX, in this case). When Makefile calls 'docker build', it looks for a Dockerfile in that directory.
+
+The Dockerfile is available inside the 'docker' folder. This is what it contains for vQFX:
+
+```
+root@aninchat-ubuntu:~/clabs/juniper# cat ~/vrnetlab/vqfx/docker/Dockerfile
+FROM ubuntu:20.04
+MAINTAINER Kristian Larsson <kristian@spritelink.net>
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -qy \
+ && apt-get upgrade -qy \
+ && apt-get install -y \
+    bridge-utils \
+    iproute2 \
+    python3-ipy \
+    socat \
+    qemu-kvm \
+    procps \
+    tcpdump \
+    openvswitch-switch \
+ && rm -rf /var/lib/apt/lists/*
+
+ARG RE_IMAGE
+ARG PFE_IMAGE
+
+COPY $RE_IMAGE /
+COPY $PFE_IMAGE /
+
+RUN echo $RE_IMAGE > /re_image
+RUN echo $PFE_IMAGE > /pfe_image
+
+COPY healthcheck.py /
+COPY vrnetlab.py /
+COPY launch.py /
+
+EXPOSE 22 161/udp 830 5000 10000-10099
+HEALTHCHECK CMD ["/healthcheck.py"]
+ENTRYPOINT ["/launch.py"]
+```
+
+Outside of updating and installing several packages, it is copying the PFE and RE images as well as exposing several ports. The entrypoint ('ENTRYPOINT ["/launch.py"]') tells Docker what to run once the container starts. So, in this case, it is telling it to run the launch.py Python script. This script does numerous things, along with bootstrapping configuration for vQFX (we'll look at the logs further down when we actually start our lab).
 
 ## Building and deploying a Containerlab lab with vQFX
 ### Describing the topology for Containerlab
@@ -450,55 +496,6 @@ ef1e6f245787   vrnetlab/vr-vqfx:20.2R1.10   "/launch.py --userna…"   28 minute
 ```
 
 If it remains unhealthy for a long period of time (some of these images can take 5-10 minutes to fully bootup), then most likely your container bringup is stalled somewhere (check docker logs to find out where and possibly why).
-
-### What's happening behind the scenes
-
-So, let's break down what's actually happening. Like a Makefile, there is a Dockerfile that contains instructions on how to build the docker image itself (for vQFX, in this case).
-
-The Dockerfile is available inside the 'docker' folder. This is what it contains for vQFX:
-
-```
-root@aninchat-ubuntu:~/clabs/juniper# cat ~/vrnetlab/vqfx/docker/Dockerfile
-FROM ubuntu:20.04
-MAINTAINER Kristian Larsson <kristian@spritelink.net>
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update -qy \
- && apt-get upgrade -qy \
- && apt-get install -y \
-    bridge-utils \
-    iproute2 \
-    python3-ipy \
-    socat \
-    qemu-kvm \
-    procps \
-    tcpdump \
-    openvswitch-switch \
- && rm -rf /var/lib/apt/lists/*
-
-ARG RE_IMAGE
-ARG PFE_IMAGE
-
-COPY $RE_IMAGE /
-COPY $PFE_IMAGE /
-
-RUN echo $RE_IMAGE > /re_image
-RUN echo $PFE_IMAGE > /pfe_image
-
-COPY healthcheck.py /
-COPY vrnetlab.py /
-COPY launch.py /
-
-EXPOSE 22 161/udp 830 5000 10000-10099
-HEALTHCHECK CMD ["/healthcheck.py"]
-ENTRYPOINT ["/launch.py"]
-```
-
-Outside of updating and install several packages, it is copying the PFE and RE images as well as exposing several ports. The entrypoint ('ENTRYPOINT ["/launch.py"]') tells Docker what to run once the image start. So, in this case, it is telling it to run the launch.py Python script. 
-
-This script does all of the things we saw in the docker logs for leaf1 bringup.
-
 
 ## Accessing the lab
 
