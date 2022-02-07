@@ -338,7 +338,7 @@ Finally, you declare the device interconnections. You can boot up a lab without 
 
 ### Starting a lab using Containerlab
 
-A lab be be started using 'containerlab deploy'. This command expects a topology as a reference, which is the .yml file we created earlier. Let's look at what happens when we start a lab, and more closely inspect a node bringup.
+A lab can be started using 'containerlab deploy'. This command expects a topology as a reference, which is the .yml file we created earlier. Let's look at what happens when we start a lab, and more closely inspect a node bringup.
 
 ```
 root@aninchat-ubuntu:~/clabs/juniper# containerlab deploy --topo 2L2S_vqfx.yml
@@ -580,7 +580,7 @@ admin@leaf1# set interfaces lo0 unit 0 family inet address 192.100.100.1/32
 admin@leaf2# set interfaces lo0 unit 0 family inet address 192.100.100.2/32
 ```
 
-Configure the p2p connections between the leaf and spines, and enable OSPF for each p2p link, as well as the loopback. At the end of this, we can see the expected OSPF neighbors:
+Configure the p2p connections between the leaf and spines, and enable OSPF for each p2p link, as well as the loopback. At the end of this, we see the expected OSPF neighbors:
 
 ```
 {master:0}[edit]
