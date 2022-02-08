@@ -303,6 +303,29 @@ ENTRYPOINT ["/launch.py"]
 
 Outside of updating and installing several packages, it is copying the PFE and RE images as well as exposing several ports. The entrypoint ('ENTRYPOINT ["/launch.py"]') tells Docker what to run once the container starts. So, in this case, it is telling it to run the launch.py Python script. This script does numerous things, along with bootstrapping configuration for vQFX (we'll look at the logs further down when we actually start our lab).
 
+Outside of this, the Dockerfile also has a custom healthcheck command that points to the healthcheck.py file. With a custom healthcheck, a container can be starting, healthy or unhealthy. The health is determined with 0 or 1. If it is 0, the container is healthy and if it is 1, the container is unhealthy. 
+
+```
+import sys
+
+try:
+    health_file = open("/health", "r")
+    health = health_file.read()
+    health_file.close()
+except FileNotFoundError:
+    print("health status file not found")
+    sys.exit(2)
+
+exit_status, message = health.strip().split(" ", 1)
+
+if message != '':
+    print(message)
+
+sys.exit(int(exit_status))
+```
+
+The actual health check is performed in the vrnetlab.py file - it essentially checks the health of the qemu (if the VM is running successfull or not) and writes into the /health folder (it will write the exit status as 0 or 1), which the healthcheck.py file periodically checks to determine container status.
+
 ## Building and deploying a Containerlab lab with vQFX
 ### Describing the topology for Containerlab
 
