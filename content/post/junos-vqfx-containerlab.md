@@ -336,6 +336,8 @@ In its simplest form, you're telling Containerlab the name of your devices, the 
 
 Finally, you declare the device interconnections. You can boot up a lab without any links, but realistically, you'd want to have some connections. As you can see, all of this is written in yaml, which is super easy to consume and write. 
 
+For vQFX, eth0 is the management interface, and shouldn't be used. eth1 corresponds to xe-0/0/0, eth2 corresponds to xe-0/0/1 and so on.
+
 ### Starting a lab using Containerlab
 
 A lab can be started using 'containerlab deploy'. This command expects a topology as a reference, which is the .yml file we created earlier. Let's look at what happens when we start a lab, and more closely inspect a node bringup.
