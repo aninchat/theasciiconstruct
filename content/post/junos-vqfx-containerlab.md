@@ -17,7 +17,7 @@ More information can be found on their homepage - https://containerlab.srlinux.d
 ## Building the vQFX docker container
 ### Downloading vrnetlab
 
-To build VM based containers, you need to download a fork of vrnetlab that was modified for this (https://github.com/hellt/vrnetlab). It essentially packages the VM inside a container. Simply gitclone the repo to your working directory (clear instructions are provided [here](https://containerlab.srlinux.dev/manual/vrnetlab/#building-vrnetlab-images)).
+To build VM based containers, you need to download a fork of vrnetlab that was modified for this (https://github.com/hellt/vrnetlab). It essentially packages the VM inside a container. Simply gitclone the repo to your working directory (clear instructions are provided [here](https://containerlab.srlinux.dev/manual/vrnetlab/#building-vrnetlab-images).
 
 ```
 root@aninchat-ubuntu:~# git clone https://github.com/hellt/vrnetlab .
