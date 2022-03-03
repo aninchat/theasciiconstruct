@@ -1,7 +1,7 @@
 ---
 title: "Junos Part II - BGP and BGP Unnumbered"
 date: 2022-02-16
-draft: true
+draft: false
 tags: [juniper, junos, bgp, jncis-ent, jncip-dc]
 description: "In this post, we look at BGP on Junos OS and a typical BGP configuration for the underlay, for a 3-stage Clos fabric. We also introduce BGP unnumbered, which is a great way of building the underlay, without the need of any IP addressing. "
 ---
