@@ -47,7 +47,7 @@ router-id 192.168.100.1;
 autonomous-system 64521;
 ```
 
-This is where we have our local AS number and the router ID defined. These can always be overridden under the BGP configuration, specific to a neighbor. However, if the there is no configuration for this under BGP, these routing-option parameters are used. This allows for an easy way to declare the router ID for your system globally, instead of having to specify this every time for every potential protocol that needs it. 
+This is where we have our local AS number and the router ID defined. These can always be overridden under the BGP configuration, specific to a neighbor. However, if there is no configuration for this under BGP, these routing-option parameters are used. This allows for an easy way to declare the AS number and router ID (among other things) for your system globally, instead of having to specify this every time for every potential protocol that needs it. 
 
 Let's look at the configuration from one of the spines as well:
 
@@ -69,7 +69,7 @@ group underlay {
 }
 ```
 
-There's not a whole lot that's different here - the only thing is that we have the peer-as defined per neighbor, since each leaf is in its own AS. At this point, I have IPv4 unicast (or inet unicast peering in the Juniper terminology) peering up between all the spines and the leafs.
+There's not a whole lot that's different here - the only thing is that we have the peer-as defined per neighbor, since each leaf is in its own AS. At this point, I have IPv4 unicast (or inet unicast peering in Juniper terminology) peering up between all the spines and the leafs.
 
 ```
 // Spine1
@@ -121,7 +121,7 @@ bgp {
 }
 ```
 
-There are three possible policies in this case - policy_c is what is applied since that is the most specific policy. 
+There are three policies in this case - policy_c is what is applied since that is the most specific policy. 
 
 > If no export policy exists, BGP will advertise only the prefixes learned via BGP by default.
 
@@ -138,7 +138,7 @@ policy-statement allow_loopback0 {
 }
 ```
 
-We then add this as an export policy under BGP:
+I've defined a policy-statement called 'allow_loopback0'. In this, we match on interface lo0.0 and also specifically match the IP address 192.168.100.1/32 (as an exact match). We then add this as an export policy under BGP:
 
 ```
 {master:0}[edit]
@@ -194,7 +194,7 @@ policy-statement allow_loopback0 {
 }
 ```
 
-> The command 'show route receive-protocol bgp' shows the routes received by the BGP process from a specific neighbor. 
+> The command 'show route receive-protocol bgp' shows the routes received by the BGP process from a specific neighbor. This is essentially BGP RIB In.
 
 At this point, both Leaf1 and Leaf2 should have each others loopback, and it should be reachable.
 
@@ -316,7 +316,7 @@ I've covered BGP Unnumbered in one of my earlier Cumulus posts. This one is goin
 
 > Juniper calls this BGP Auto Discovered Neighbors
 
-BGP unnumbered is gaining popularity (as it should) as the primary choice for underlay design in a VXLAN EVPN fabric. The reason is fairly simple - a big part of desiging your underlay is IPv4 allocation (assuming you're building an IPv4 underlay). These are typically /30s (that should really be /31s). BGP unnumbered alleviates the pain of this address allocation, and simply functions on the fact that an IPv6 peering can be used to advertise an IPv4 NLRI with an IPv6 next-hop (RFC 5549).
+BGP unnumbered is gaining popularity (as it should) as the primary choice for underlay design in a VXLAN EVPN fabric. The reason is fairly simple - a big part of designing your underlay is IPv4 address allocation (assuming you're building an IPv4 underlay). These are typically /30s (that should really be /31s). BGP unnumbered alleviates the pain of this address allocation, and simply functions on the fact that an IPv6 peering can be used to advertise an IPv4 NLRI with an IPv6 next-hop (RFC 5549).
 
 ### IPv6 configuration for BGP unnumbered
 
@@ -430,7 +430,7 @@ IPv6 Address                            Linklayer Address  State       Exp   Rtr
 fe80::205:86ff:fefd:4203                 02:05:86:fd:42:03  stale       773   yes  no      xe-0/0/0.0
 ```
 
-We'll complete our configuration by applying the same commands to all other relevant devices and interfaces. At the end of this. the two spines have learned the link local addresses of both leafs:
+We'll complete our configuration by applying the same commands to all other relevant devices and interfaces. At the end of this, the two spines have learned the link local addresses of both leafs:
 
 ```
 // Spine1
@@ -452,9 +452,9 @@ Total entries: 2
 
 ### Enabling BGP to auto discover IPv6 neighbors
 
-Now that we have our base IPv6 built, we can start to enable BGP for the underlay. But there's a catch here - since we're no longer using IPv4 addressing for our underlay, what do we really peer against? BGP needs an explicit neighbor address to peer with. This is where we leverage BGP dynamic peering to build neighbors over these IPv6 link local addresses, using IPv6 Neighbor Discovery.
+Now that we have our base IPv6 configuration deployed, we can start to enable BGP for the underlay. But there's a catch here - since we're no longer using IPv4 addressing for our underlay, what do we really peer against? BGP needs an explicit neighbor address to peer with. This is where we leverage BGP dynamic peering to build neighbors over these IPv6 link local addresses, using IPv6 Neighbor Discovery.
 
-Consider Leaf1 and Spine1 again to understand this better. We're going to create a BGP 'underlay' group again, but this time, instead of specifying IPv4 neighbors, we're going to enable BGP peer discovery. 
+Consider Leaf1 and Spine1 again to understand this better. We're going to create a BGP 'underlay' group again, but this time, instead of specifying IPv4 neighbors, we're going to enable BGP peer discovery and enable it for the IPv6 enabled interfaces (you're specifying interfaces for peering instead of neighbor addresses now).
 
 This is what we have so far for this part of the configuration:
 
@@ -635,12 +635,11 @@ fe80::205:86ff:fefd:4207%xe-0/0/0.0       64521         14         13       0   
 
 ### Analyzing an IPv4 NLRI advertisement with BGP unnumbered
 
-Again, with dynamic neighbors using IPv6 ND, Junos OS does not allow you to apply an export policy against the interface (and since you don't have explicit neighbors, you can't apply it there either). In this case, we need to apply it for the entire group, which is why I've made my policy a little more specific, by matching only direct routes as well:
+Again, with dynamic neighbors using IPv6 ND, Junos OS does not allow you to apply an export policy against the interface (and since you don't have explicit neighbors, you can't apply it there either). In this case, we need to apply it for the entire group, which is why it is important to keep your policy as specific as possible:
 
 ```
 policy-statement allow_loopback0 {
     from {
-        protocol direct;
         interface lo0.0;
         route-filter 192.168.100.1/32 exact;
     }
