@@ -20,7 +20,7 @@ Arista vEOS is used for both the spines and leaf1. Cumulus VX is leaf2, Cisco N9
 
 ![topology2](/images/multivendor/multivendor_1/topology_2.jpg)
 
-The endgoal is to get all the hosts to talk to each other, and also understand if these vendors play nice with each other when deploying L2 overlays with BGP EVPN and VXLAN (w're in for a few interesting surprises here).
+The endgoal is to get all the hosts to talk to each other, and also understand if these vendors play nice with each other when deploying L2 overlays with BGP EVPN and VXLAN (we're in for a few interesting surprises here).
 
 ## Building the docker images
 
@@ -450,7 +450,7 @@ a02ead147994   networkop/host:ifreload      "/entrypoint.sh"         8 minutes a
 
 ## Automating the fabric bringup
 
-In order to automate the fabric bringup, I've written a (terrible) Ansible script. The script can be found [here](https://github.com/aninchat/evpn-multivendor-l2-only). This is meant to configure the p2p interfaces between the leafs and the spines, underlay routing (BGP), overlay routing (BGP EVPN), all of the necessary VXLAN and VLAN configuration for a L2 overlay, and finally the host IP addressing itself.
+In order to automate the fabric bringup, I've written a (terrible) Ansible script. The script can be found [here](https://github.com/aninchat/evpn-multivendor-l2-only). This is meant to configure the p2p interfaces between the leafs and the spines, underlay routing (BGP), overlay routing (BGP EVPN), and all of the necessary VXLAN and VLAN configuration for a L2 overlay.
 
 ### Ansible inventory and variables for fabric deployment
 
@@ -577,7 +577,7 @@ ansible_become: yes
 ansible_become_method: enable
 ```
 
-To ensure that you're inventory is built as expected, and all of the variables are inherited correctly, we can use the 'ansible-inventory' command as follows (only a snippet is shown here for brevity):
+To ensure that your inventory is built as expected, and all of the variables are inherited correctly, we can use the 'ansible-inventory' command as follows (only a snippet is shown here for brevity):
 
 ```
 root@aninchat-ubuntu:~/clabs/multivendor# ansible-inventory inventory.yml --list
@@ -761,7 +761,7 @@ interface {{ interface }}
 {% endfor -%}
 ```
 
-As you can see, there are three spaces for EOS configuration, while there are two spaces for NXOS configuration. This becomes crucial for idempotency. This jinja2 is finally used in the playbook itself, as follows:
+As you can see, there are three spaces for EOS configuration, while there are two spaces for NXOS configuration. This becomes crucial for idempotency. This jinja2 template is finally used in the playbook, as follows:
 
 ```
           - name: configure interfaces on network devices
@@ -781,7 +781,7 @@ The playbook can now be executed to automate the full deployment. Couple of note
 1. with Arista's EOS (and vEOS), you need to enable multi-agent service model (the default is ribd, which is single agent). The catch here is that after enabling this, the device must be reloaded - this is true even for the actual hardware platforms, and not just vEOS. As part of this automation, I am enabling multi-agent, but you, as the user, must reload the box at least once to get BGP peerings to come up (you'll see IPv4 unicast BGP come up, but no other address family will work until a reload).
 2. Juniper's vQFX takes a bit to load all of the network interfaces (the 'xe' interfaces). You need to be patient. You can verify if the interfaces have come up using the 'show interfaces terse' command. Until then, do not run the ansible playbook. 
 
-Outside of these things, there were certain placees where my hands felt like they were tied while building the actual ansible playbook. For example, for Cumulus' automataion, I use the 'community.network.nclu' ansible module. This module can take in a template for configuration, however, it doesn't seem to take a template path and instead, expects you to define an inline template, which is really odd. This bloats up the playbook considerably, an example (taken from the playbook) below:
+Outside of these things, there were certain places where my hands felt like they were tied while building the actual ansible playbook. For example, for Cumulus' automation, I use the 'community.network.nclu' ansible module. This module can take in a template for configuration, however, it doesn't seem to take a template path and instead, expects you to define an inline template, which is really odd. This bloats up the playbook considerably, an example (taken from the playbook) below:
 
 ```
           - name: configure interfaces on network devices
@@ -944,7 +944,7 @@ rtt min/avg/max/mdev = 112.935/173.590/200.128/31.282 ms, pipe 5, ipg/ewma 10.74
 
 ### Clue #1
 
-Let's start by looking at some EVPN routes now. I am obviously aware of some of the interoperability issues in this network, so I'll start dropping hints to help you along the way. Can you see spot what's odd?
+Let's start by looking at some EVPN routes now. I am obviously aware of some of the interoperability issues in this network, so I'll start dropping hints to help you along the way.
 
 First, because I am using ingress replication, I should see a type-3 IMET route generated by each leaf. We'll stay on leaf1 for this analysis:
 
@@ -1019,7 +1019,7 @@ BGP routing table entry for imet 10100 192.168.100.4, Route Distinguisher: 192.1
       PMSI Tunnel: Ingress Replication, MPLS Label: 10100, Leaf Information Required: false, Tunnel ID: 192.168.100.4
 ```
 
-Do you see it yet? No?
+Do you see it yet?
 
 We should also see some type-2 macip routes since all my hosts are up and running:
 
@@ -1149,13 +1149,13 @@ See that '10100' in there? Well, that's the Ethernet Tag ID. Let's take a BGP pa
 
 This it the type-3 imet route update:
 
-![type3_imet](/images/multivendor/multivendor_1/evpn_type3_update.jpg.jpg)
+![type3_imet](/images/multivendor/multivendor_1/evpn_type3_update.jpg)
 
 And this is the type-2 macip route update:
 
-![type3_macip](/images/multivendor/multivendor_1/evpn_type2_update.jpg.jpg)
+![type3_macip](/images/multivendor/multivendor_1/evpn_type2_update.jpg)
 
-In both those cases, we see that the update itself is tagged with an Ethernet Tag ID of 10100, which corresponds to the VNI itself. 
+In both those cases, we see that the update is tagged with an Ethernet Tag ID of 10100, which corresponds to the VNI. 
 
 Remember that an Ethernet Tag ID essentially identifies a broadcast domain in an EVPN instance. However, there are multiple ways that such an instance can be represented. The most common ways are:
 
