@@ -450,7 +450,7 @@ a02ead147994   networkop/host:ifreload      "/entrypoint.sh"         8 minutes a
 
 ## Automating the fabric bringup
 
-In order to automate the fabric bringup, I've written a (terrible) Ansible script. The script can be found [here](). This is meant to configure the p2p interfaces between the leafs and the spines, underlay routing (BGP), overlay routing (BGP EVPN), all of the necessary VXLAN and VLAN configuration for a L2 overlay, and finally the host IP addressing itself.
+In order to automate the fabric bringup, I've written a (terrible) Ansible script. The script can be found [here](https://github.com/aninchat/evpn-multivendor-l2-only). This is meant to configure the p2p interfaces between the leafs and the spines, underlay routing (BGP), overlay routing (BGP EVPN), all of the necessary VXLAN and VLAN configuration for a L2 overlay, and finally the host IP addressing itself.
 
 ### Ansible inventory and variables for fabric deployment
 
