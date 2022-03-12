@@ -1,9 +1,9 @@
 ---
 title: "Multi-vendor EVPN VXLAN setup with Containerlab"
-date: 2022-03-03
+date: 2022-03-12
 draft: false
 tags: [containerlab, cumulus, arista, junos, bgp, vxlan, evpn, cisco, nexus]
-description:
+description: "In this post, we deploy a multivendor EVPN L2 overlay fabric, with BGP in the underlay as well. The entire fabric deployment is automated with Ansible, and Containerlab is used to define and deploy the actual topology."
 ---
 In this post, we deploy a multivendor EVPN L2 overlay fabric, with BGP in the underlay as well. The entire fabric deployment is automated with Ansible, and Containerlab is used to define and deploy the actual topology.
 <!--more-->
@@ -16,7 +16,7 @@ The topology is as follows:
 
 ![topology1](/images/multivendor/multivendor_1/topology_1.jpg)
 
-Arista vEOS is used for both the spines and leaf1. Cumulus VX is leaf2, Cisco N9Kv is leaf3 and Juniper vQFX is leaf4. Behind each leaf is a host, and all hosts are in the same 10.100.100.0/24 subnet. Router-IDs for each spine and leaf, along with the host details are as follows:
+Arista vEOS is used for both the spines and leaf1. Cumulus VX is leaf2, Cisco N9Kv is leaf3 and Juniper vQFX is leaf4. Behind each leaf is a host, and all hosts are in the same 10.100.100.0/24 subnet. Router-IDs for each spine and leaf, along with the host details are as follows. The router-ID with a /32 mask makes up the loopback of each device as well:
 
 ![topology2](/images/multivendor/multivendor_1/topology_2.jpg)
 
