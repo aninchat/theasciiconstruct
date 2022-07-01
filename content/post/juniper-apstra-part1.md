@@ -96,7 +96,7 @@ On the left hand side, there is a pane with several elements. A lot of the day-0
 
 The 'Devices' tab has the following options:
 
-![gui2](/images/juniper/juniper_apstra_1/gui_devices_tab)
+![gui2](/images/juniper/juniper_apstra_1/gui_devices_tab.jpg)
 
 Here, you can create agents for devices that need to be onboarded (we'll cover this next), create agent profiles, look at device profiles and so on.
 
@@ -113,6 +113,28 @@ Finally, 'Resources' are fairly straightforward:
 These are various resources that Apstra will use to automate your DC deployment. 
 
 ## General workflow within Apstra
+
+The first step in any SDN system or IBN system is typically to get devices registered and onboarded in order to be able to manage them. 
+
+A high level workflow for this is as follows:
+
+![workflow1](/images/juniper/juniper_apstra_1/onboard_and_build_rack_workflow)
+
+In Apstra, devices are onboarded and managed through something called 'Agents'. You can also create different 'Agent Profiles' to cater to different kinds of network operating systems, vendors and logins. 
+
+Once your devices are in the system, you get to the 'designing' part. Here, you are largely building a rack or racks for your data center. There are several parameters that are fed into a rack and this is fairly involved but very logical. 
+
+A rack will typically have one or more leafs, it may or may not have redundancy between these leafs, there may be some access switches connected to the leafs and finally there will be some hosts in the rack. All of these are options that you control and define. The 'LD' in the workflow above stands for 'Logical Device' - we'll look at all of this and how to define these options in more detail in subsequent posts.
+
+Once a rack (or racks) have been created, you can move onto creating a template for your data center. The template has several feeds as well, including many important options for your data center - ASN allocation, overlay and underlay details, leaf and spine information and so on. 
+
+![workflow2](/images/juniper/juniper_apstra_1/build_template_workflow)
+
+Finally, once a template is ready, you can create a blueprint for your data center. The blueprint is built from the template itself, and takes in various resources to start mapping out actual tangible and deployable network elements. These are various resources like Autonomous System numbers, IPs pools, interface maps and so on.
+
+![workflow3](/images/juniper/juniper_apstra_1/blueprint_workflow)
+
+
 
 
 
