@@ -1,5 +1,5 @@
 ---
-title: "Juniper Apstra Part I - Introducing to a true IBNS"
+title: "Juniper Apstra Part I - Introducing a true IBNS"
 date: 2022-06-30
 draft: false
 tags: [juniper, apstra, vxlan, bgp, evpn, jncia-dc, jncis-dc, jncip-dc]
