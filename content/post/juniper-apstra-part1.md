@@ -54,7 +54,7 @@ Relational databases (also called as SQL databases) are structured as tables (ro
 
 There are several fields in this database that describe a network device - hostname, software version, management IP address. This can be visualized as so:
 
-![relationaldb1](/images/juniper/juniper_apstra_1/relational_db_1)
+![relationaldb1](/images/juniper/juniper_apstra_1/relational_db_1.jpg)
 
 Naturally, there are many other pieces of data that we might want to store or link to a network device. It doesn't make sense to have everything in one table itself. This is where relationships are built, and hence the term "relational" database.
 
@@ -62,7 +62,7 @@ For example, let's say we'd like to have some device specific settings like AAA 
 
 Let's add another column in our 'networkdevice' table, and we'll call it 'device_id'. This is the foreign key that will connect our two tables together. Visually, this would be something like this:
 
-![relationaldb2](/images/juniper/juniper_apstra_1/relational_db_2)
+![relationaldb2](/images/juniper/juniper_apstra_1/relational_db_2.jpg)
 
 Relational databases, despite the name, are not great at capturing data that is connected. Because multiple tables need to be queried to get the final data, the computation becomes increasingly expensive. This is usually okay when only a low number of tables exist, but this is hardly the case in real world deployments - the number of tables in use, and related, will likely be quite high. 
 
@@ -76,7 +76,7 @@ For the scope of our discussions here, we will look at something called as label
 
 Visually, this looks like so:
 
-![graphdb1](/images/juniper/juniper_apstra_1/graph_db_1)
+![graphdb1](/images/juniper/juniper_apstra_1/graph_db_1.jpg)
 
 I didn't want to reinvent the wheel, so the above is just a stripped down version from a data center deployment (which we'll look at) in Apstra. I've just focused on two nodes and the relationship between them. 
 
@@ -92,7 +92,7 @@ These are just two nodes that I've shown as an example - the entire blueprint th
 
 This is your first look at Juniper Apstra (at least the first within the context of this blog post). 
 
-![gui1](/images/juniper/juniper_apstra_1/gui_first_look)
+![gui1](/images/juniper/juniper_apstra_1/gui_first_look.jpg)
 
 On this main page, a simple workflow is provided - build racks, design the network, create and deploy a blueprint. Of course, it is a little more involved than this and we're going to break it down in this post, and several others that will follow.
 
@@ -106,13 +106,13 @@ Here, you can create agents for devices that need to be onboarded (we'll detail 
 
 The 'Design' tab has the following options:
 
-![gui3](/images/juniper/juniper_apstra_1/gui_design_tab)
+![gui3](/images/juniper/juniper_apstra_1/gui_design_tab.jpg)
 
 'Design' is where you start to sculpture what your data center will look like. We'll look at this in more detail shortly as well. 
 
 Finally, 'Resources' are fairly straightforward:
 
-![gui4](/images/juniper/juniper_apstra_1/gui_resources_tab)
+![gui4](/images/juniper/juniper_apstra_1/gui_resources_tab.jpg)
 
 These are various resources that Apstra will use to automate your data center deployment. 
 
@@ -122,7 +122,7 @@ The first step in any SDN system or IBN system is typically to get devices regis
 
 A high level workflow for this is as follows:
 
-![workflow1](/images/juniper/juniper_apstra_1/onboard_and_build_rack_workflow)
+![workflow1](/images/juniper/juniper_apstra_1/onboard_and_build_rack_workflow.jpg)
 
 In Apstra, devices are onboarded and managed through something called 'Agents'. You can also create different 'Agent Profiles' to cater to different kinds of network operating systems, vendors and logins. 
 
@@ -132,11 +132,11 @@ A rack will typically have one or more leafs, it may or may not have redundancy 
 
 Once a rack (or racks) have been created, you can move onto creating a template for your data center. The template has several feeds as well, including many important options for your data center - ASN allocation, overlay and underlay details, leaf and spine information and so on. 
 
-![workflow2](/images/juniper/juniper_apstra_1/build_template_workflow)
+![workflow2](/images/juniper/juniper_apstra_1/build_template_workflow.jpg)
 
 Finally, once a template is ready, you can create a blueprint for your data center. The blueprint is built from the template itself, and takes in various resources to start mapping out actual tangible and deployable network elements. These are things like Autonomous System numbers, IPs pools, interface maps and so on.
 
-![workflow3](/images/juniper/juniper_apstra_1/blueprint_workflow)
+![workflow3](/images/juniper/juniper_apstra_1/blueprint_workflow.jpg)
 
 ## References
 
