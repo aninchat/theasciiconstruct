@@ -1,17 +1,21 @@
 ---
-title: "Juniper Apstra Part I - "
+title: "Juniper Apstra Part I - Introducing to a true IBNS"
 date: 2022-06-06
 draft: true
 tags: [juniper, apstra, vxlan, bgp, evpn, jncia-dc, jncis-dc, jncip-dc]
 description:
 ---
-description
+With this post, we kick off a new series based on Juniper Apstra. This post serves as an introduction to Apstra - we'll look at what a true IBN system is, how relational and graph databases are different (and why graph databases are ideal for network infrastructure), concluding with some general workflows in Apstra.
 <!--more-->
 ## Introduction
 
-In this post, I'll introduce Juniper Apstra. We'll take a look at what a true IBN system is supposed to be, and why Apstra exemplifies this. We'll also explore graph databases, which is a data storing model that Apstra is based on.
+It's that time again - time for a new series! And I am really excited for this one. I am going to be kicking off a Juniper Apstra series with this first post. This post will look at what Intent Based Networking truly is, and what an Intent Based Networking System (IBNS) looks like.
 
-Finally, we'll go through various Apstra components and learn how to build everything we need, to deploy a simple Data Center.
+We'll then take a bit of a detour and talk about databases - I felt it was important to (at minimum) gain a basic understanding of relational and graph databases and why one is better suited than the other for network infrastructure. Graph databases form a crucial pillar of Apstra.
+
+Finally, we'll close this out by looking at some generic workflows within Apstra - I've broken this down into simple, high level flows without going into too much detail. Not to worry, the details will come in subsequent posts. 
+
+Let's get started!
 
 **As a disclaimer, I'd like to say that a lot of what I've written about IBN and IBN systems here, comes from reading papers and book(s) written by the fantastic Jeff Doyle. There is no intent to plagiarize his work.** 
 
@@ -78,9 +82,9 @@ I didn't want to reinvent the wheel, so the above is just a stripped down versio
 
 The nodes here are a 'system' and an 'interface'. The relationship between them is 'hosted interfaces', essentially implying that the system (with it's listed properties) has an interface (with it's listed properties). 
 
-As you can see, the 'system' node has 'key:value' properties assigned to it - these include a base identifier called 'id', the name of the system ('spine1', in this case), it's role in the DC deployment and so on. Similarly, the 'interface' node has some 'key:value' properties assigned to it as well - again, an identifier, the interface name, IPv4 address and so on.
+As you can see, the 'system' node has 'key:value' properties assigned to it - these include a base identifier called 'id', the name of the system ('spine1', in this case), it's role in the network and so on. Similarly, the 'interface' node has some 'key:value' properties assigned to it as well - again, an identifier, the interface name, IPv4 address and so on.
 
-Finally, the relationship has some 'key:value' properties as well, largely to specify the direction, indicated via a source ID (which matches the 'system' node) and a destination ID (which matches the 'interface' node).
+Finally, the relationship has some 'key:value' properties also, largely to specify the direction, indicated via a source ID (which matches the 'system' node) and a destination ID (which matches the 'interface' node).
 
 These are just two nodes that I've shown as an example - the entire blueprint that is deployed in Apstra is instantiated as a graph that can be traversed. We'll take a more detailed look at it once we actually deploy a blueprint in later posts.
 
@@ -90,27 +94,27 @@ This is your first look at Juniper Apstra (at least the first within the context
 
 ![gui1](/images/juniper/juniper_apstra_1/gui_first_look)
 
-On this main page, a simple workflow is provided - build racks, design the network, create and deploy blueprint. Of course, it is a little more involved than this and we're going to break it down in this post, and several others that will follow.
+On this main page, a simple workflow is provided - build racks, design the network, create and deploy a blueprint. Of course, it is a little more involved than this and we're going to break it down in this post, and several others that will follow.
 
-On the left hand side, there is a pane with several elements. A lot of the day-0 work is done within the 'Devices', 'Design' and 'Resources' tab. In this post, we're going to focus on this only. 
+On the left hand side, there is a pane with several elements. A lot of the work is done within the 'Devices', 'Design' and 'Resources' tab. In this post, we're going to focus on these only. 
 
 The 'Devices' tab has the following options:
 
 ![gui2](/images/juniper/juniper_apstra_1/gui_devices_tab.jpg)
 
-Here, you can create agents for devices that need to be onboarded (we'll cover this next), create agent profiles, look at device profiles and so on.
+Here, you can create agents for devices that need to be onboarded (we'll detail out the process in a subsequent post), create agent profiles, create or view device profiles and so on.
 
 The 'Design' tab has the following options:
 
 ![gui3](/images/juniper/juniper_apstra_1/gui_design_tab)
 
-'Design' is where you start to sculpture what your DC will look like. We'll look at this in more detail shortly. 
+'Design' is where you start to sculpture what your data center will look like. We'll look at this in more detail shortly as well. 
 
 Finally, 'Resources' are fairly straightforward:
 
 ![gui4](/images/juniper/juniper_apstra_1/gui_resources_tab)
 
-These are various resources that Apstra will use to automate your DC deployment. 
+These are various resources that Apstra will use to automate your data center deployment. 
 
 ## General workflow within Apstra
 
@@ -130,27 +134,12 @@ Once a rack (or racks) have been created, you can move onto creating a template 
 
 ![workflow2](/images/juniper/juniper_apstra_1/build_template_workflow)
 
-Finally, once a template is ready, you can create a blueprint for your data center. The blueprint is built from the template itself, and takes in various resources to start mapping out actual tangible and deployable network elements. These are various resources like Autonomous System numbers, IPs pools, interface maps and so on.
+Finally, once a template is ready, you can create a blueprint for your data center. The blueprint is built from the template itself, and takes in various resources to start mapping out actual tangible and deployable network elements. These are things like Autonomous System numbers, IPs pools, interface maps and so on.
 
 ![workflow3](/images/juniper/juniper_apstra_1/blueprint_workflow)
 
-
-
-
-
-## Agents
-
-One of the core constructs in Apstra is the 'Device Agent' - this is how the inventory is built and maintained within Apstra. Agents can be both on-box (the agent is installed on the network device itself) and off-box (the agent is installed as a container within Apstra and it talks to the network device via ssh/api), depending on what the network device supports. 
-
-
-## Resources
-## Design
-## Blueprint
-## Staging a DC
-## Deploying a DC
 ## References
 
 1. [IBN for Dummies](https://www.juniper.net/content/dam/www/assets/ebooks/us/en/intent-based-networking-for-dummies.pdf) by Jeff Doyle.
-2. 
 
 
