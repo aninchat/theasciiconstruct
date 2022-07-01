@@ -138,6 +138,8 @@ Finally, once a template is ready, you can create a blueprint for your data cent
 
 ![workflow3](/images/juniper/juniper_apstra_1/blueprint_workflow.jpg)
 
+In the next post, we'll actually start to do all of this - we'll design our racks, build out a template, create all these resources that we just talked about. All of the fun stuff! Stay tuned, lot's more to follow!
+
 ## References
 
 1. [IBN for Dummies](https://www.juniper.net/content/dam/www/assets/ebooks/us/en/intent-based-networking-for-dummies.pdf) by Jeff Doyle.
