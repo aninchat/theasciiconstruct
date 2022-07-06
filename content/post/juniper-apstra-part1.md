@@ -58,7 +58,7 @@ There are several fields in this database that describe a network device - hostn
 
 Naturally, there are many other pieces of data that we might want to store or link to a network device. It doesn't make sense to have everything in one table itself. This is where relationships are built, and hence the term "relational" database.
 
-For example, let's say we'd like to have some device specific settings like AAA enabled or not, site name or site ID, it's role in the network (spine/leaf/other) and so on. We could have another table for this called 'devicesettings' that has all of this information, and build a relationship between this table and our 'networkdevice' table. This is done using something called as 'foreign keys'. A foreign key is simply a column that uniquely identifies a row in another table.
+For example, let's say we'd like to have some device specific settings like AAA enabled or not, site name or site ID, its role in the network (spine/leaf/other) and so on. We could have another table for this called 'devicesettings' that has all of this information, and build a relationship between this table and our 'networkdevice' table. This is done using something called as 'foreign keys'. A foreign key is simply a column that uniquely identifies a row in another table.
 
 Let's add another column in our 'networkdevice' table, and we'll call it 'device_id'. This is the foreign key that will connect our two tables together. Visually, this would be something like this:
 
@@ -80,9 +80,9 @@ Visually, this looks like so:
 
 I didn't want to reinvent the wheel, so the above is just a stripped down version from a data center deployment (which we'll look at) in Apstra. I've just focused on two nodes and the relationship between them. 
 
-The nodes here are a 'system' and an 'interface'. The relationship between them is 'hosted interfaces', essentially implying that the system (with it's listed properties) has an interface (with it's listed properties). 
+The nodes here are a 'system' and an 'interface'. The relationship between them is 'hosted interfaces', essentially implying that the system (with its listed properties) has an interface (with its listed properties). 
 
-As you can see, the 'system' node has 'key:value' properties assigned to it - these include a base identifier called 'id', the name of the system ('spine1', in this case), it's role in the network and so on. Similarly, the 'interface' node has some 'key:value' properties assigned to it as well - again, an identifier, the interface name, IPv4 address and so on.
+As you can see, the 'system' node has 'key:value' properties assigned to it - these include a base identifier called 'id', the name of the system ('spine1', in this case), its role in the network and so on. Similarly, the 'interface' node has some 'key:value' properties assigned to it as well - again, an identifier, the interface name, IPv4 address and so on.
 
 Finally, the relationship has some 'key:value' properties also, largely to specify the direction, indicated via a source ID (which matches the 'system' node) and a destination ID (which matches the 'interface' node).
 
@@ -90,7 +90,7 @@ These are just two nodes that I've shown as an example - the entire blueprint th
 
 ## Navigating the GUI
 
-This is your first look at Juniper Apstra (at least the first within the context of this blog post). 
+This is your first look at Juniper Apstra (at least the first within the context of this blog post). This is Apstra version 4.1.0. 
 
 ![gui1](/images/juniper/juniper_apstra_1/gui_first_look.jpg)
 
