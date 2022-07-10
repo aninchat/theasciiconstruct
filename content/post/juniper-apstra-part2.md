@@ -14,6 +14,14 @@ In this post, we'll start designing the building blocks for our data center depl
 
 Designing a rack is a fairly involved process. To be completely thorough, we're going to define new logical devices, create interface maps for these and then put it all together to build a rack. Naturally, some of these terms (logical devices, interface maps and so on) are Apstra specific - not to worry, we'll break it all down and understand what these are and how they are used. 
 
+Before we dive into this, I'd like to talk about why Apstra does things this way and what the methodology is. Why build these abstracted models? Why racks? 
+
+When you're building out a data center (physically), you'd know that there are a lot of things that simply repeat. Racks are usually identical - or at best you have a few types of racks servicing specific things, and those types of racks repeat. This can include how many leafs per rack, the redundancy model is usually common across the organization, how many servers and so on. You're typically buying identical physical racks as well (like a 42RU rack) and so on. 
+
+This repeatability also drives consistency - the more "unique" data points you add in your network, the more complex it becomes. And complexity more potential outages, slower time to resolution when issues do arise. Simple is good. 
+
+Apstra just took these repeatable units and made logical, abstracted models of these. It's a simple, natural extension of how your physical data center would look, which makes it so easy to work with, and understand what Apstra is doing and why.
+
 ## Topology
 
 Our topology is the same one we used for [Part I](https://www.theasciiconstruct.com/post/juniper-apstra-part1/) of this series. We're going to be focusing on just the vQFX devices and leave out the Arista vEOS and Cisco N9Kv for now (multivendor via Apstra will be a later post).
@@ -184,11 +192,11 @@ Before we move on from this, I'd like to show you the pre-built vQFX device prof
 
 These are 12x10G ports, with the transformation defining the interface naming as xe-0/0/0 for port 1 and so on, which is what we expect. 
 
+The transformations do more than just this - these are extremely crucial for defining breakouts as well. You can simply have multiple transformations defined which allows you to create port breakouts - for example, let's say the actual vendor hardware you buy allows for a 40G port to be split into 4x10G ports. How would you deal with this in Apstra? You would simply create two transformations - one for the 4x10G ports and another for the 1x40G port.
+
 ### Interface Maps
 
 Interface Maps are fairly straightforward, but extremely important. A logical device and a device profile feed into it, and are used to create an interface map. This is where your logical abstraction of a device, and it's hardware specific information all comes together to form an actual deployable network device in your blueprint (which we'll talk about in the next post).
-
-![interface_map_workflow](/images/juniper/juniper_apstra_2/interface_map_workflow.jpg)
 
 From the UI, this is found under 'Design' again. Like I said, an interface map just takes in two feeds - a logical device, and a device profile.
 
@@ -203,6 +211,8 @@ The 'Select Interface' is kind of a drop down, which when clicked, lists all the
 ![interface_map3](/images/juniper/juniper_apstra_2/interface_map3.jpg)
 
 This can be a little confusing, since it might seem like we did this exercise while creating a logical device as well, but think of it as this way - with the logical device, you're only defining the number of ports, their speeds, and what they are allowed to be connected to. In the interface map (and using the device profile), you're actually selecting which ports can do what and mapping them to a vendors standard naming convention (using a transformation that was defined in the device profile) for that kind of port.
+
+![interface_map_workflow](/images/juniper/juniper_apstra_2/interface_map_workflow.jpg)
 
 So, in our case, I'd like the first 6 ports to be available as my spine connections, and use transformation #1 which was the default transformation present in the pre-built vQFX device profile. Let's select those:
 
@@ -221,5 +231,53 @@ For our spine interface map, a similar process can be followed. In this case, th
 ![interface_map7](/images/juniper/juniper_apstra_2/interface_map7.jpg)
 
 ### Putting it all together to build a rack
+
+Well, we're finally here. We've got all our building blocks setup, and it's time to actually build a data center rack. 
+
+Racks are found under 'Design' and like everything else, there are several pre-built racks for you. To demonstrate how it's done, we're going to build a rack from scratch. Our goal is to build a rack that has one vQFX leaf and two hosts attached to it. It is minimal, and a little unrealistic, but the aim is to largely show you how these different pieces fit together and what the workflow looks like for this.
+
+We're going to give our rack a name - '1L vQFX12x10G', which makes it easy for me to understand that this is a one leaf rack, where the leaf is a vQFX with 12x10G ports. We want to build a 3-stage Clos fabric, so we're going to choose the 'L3 Clos' option. Alternatively, you can choose the 'L3 Collapsed' design, where there are no spines.
+
+![vqfx_rack1](/images/juniper/juniper_apstra_2/vqfx_rack1.jpg)
+
+Now we can move into the configuration of the rack - this is where you define the number of leafs, kind of leafs, how many hosts, if there are any access switches (that sit between the leaf and the hosts)) and so on.
+
+![vqfx_rack2](/images/juniper/juniper_apstra_2/vqfx_rack2.jpg)
+
+The main input for the leafs here are:
+
+- a leaf logical device
+- the redundancy model (none, MLAG or ESI)
+- how many links per spine (these are taken from how many ports you've assigned as a connection to a spine)
+- what kind of port speed for your spine facing links
+
+Let's provide these inputs for our rack:
+
+![vqfx_rack3](/images/juniper/juniper_apstra_2/vqfx_rack3.jpg)
+
+Because this is a one leaf rack, the redundacy model chosen is simply none. But watch what happens when you choose ESI:
+
+![vqfx_rack4](/images/juniper/juniper_apstra_2/vqfx_rack4.jpg)
+
+The number of leafs automatically becomes two. Any guesses on why MLAG is greyed out and cannot be selected? Go back to our logical device for this leaf - we never marked any ports that could be connected to another leaf, which naturally eliminates MLAG as an option since that requires a leaf to leaf connection.
+
+Now that our leaf is defined, we need to declare the generic systems that will be present in the rack (and how they will be connected to the leaf).
+
+![vqfx_rack5](/images/juniper/juniper_apstra_2/vqfx_rack5.jpg)
+
+We'd like to have two hosts per rack, and each link is a 10G link back up to the leaf:
+
+![vqfx_rack6](/images/juniper/juniper_apstra_2/vqfx_rack6.jpg)
+
+As part of the generic system definition, you need to also define properties of the link that will connect the host and the leaf. 'Add logical link' at the bottom allows you to do this. Here, you can configure how many links per host, if there is a need for LACP for link aggregation and so on.
+
+![vqfx_rack7](/images/juniper/juniper_apstra_2/vqfx_rack7.jpg)
+
+And finally, you can click on 'Create' to create this rack. This is what it looks like visually:
+
+![vqfx_rack8](/images/juniper/juniper_apstra_2/vqfx_rack8.jpg)
+
+This visual representation of your rack is so cool! It shows you exactly what you built, how it looks like, and if you scroll further down, it shows you each element that was used to build this entire rack.
+
 ## Designing a data center template
 ## References
