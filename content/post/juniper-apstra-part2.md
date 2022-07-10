@@ -178,7 +178,48 @@ You also need to associate a "transformation" against the port. This is how the 
 
 ![new_device_profile5](/images/juniper/juniper_apstra_2/new_device_profile5.jpg)
 
+Before we move on from this, I'd like to show you the pre-built vQFX device profile:
+
+![vqfx_device_profile](/images/juniper/juniper_apstra_2/vqfx_device_profile.jpg)
+
+These are 12x10G ports, with the transformation defining the interface naming as xe-0/0/0 for port 1 and so on, which is what we expect. 
+
 ### Interface Maps
+
+Interface Maps are fairly straightforward, but extremely important. A logical device and a device profile feed into it, and are used to create an interface map. This is where your logical abstraction of a device, and it's hardware specific information all comes together to form an actual deployable network device in your blueprint (which we'll talk about in the next post).
+
+![interface_map_workflow](/images/juniper/juniper_apstra_2/interface_map_workflow.jpg)
+
+From the UI, this is found under 'Design' again. Like I said, an interface map just takes in two feeds - a logical device, and a device profile.
+
+![interface_map1](/images/juniper/juniper_apstra_2/interface_map1.jpg)
+
+For our case, we're going to create two interface maps - one for the vQFX leaf and another for the vQFX spine. Starting with the leaf, we have our leaf logical device and the vQFX device profile as the input. Once this is done, there is some additional selection that needs to be done - this is the port selection for the port groups that were created within the logical device:
+
+![interface_map2](/images/juniper/juniper_apstra_2/interface_map2.jpg)
+
+The 'Select Interface' is kind of a drop down, which when clicked, lists all the available ports that can be selected (and mapped using the device profile) for that port group.
+
+![interface_map3](/images/juniper/juniper_apstra_2/interface_map3.jpg)
+
+This can be a little confusing, since it might seem like we did this exercise while creating a logical device as well, but think of it as this way - with the logical device, you're only defining the number of ports, their speeds, and what they are allowed to be connected to. In the interface map (and using the device profile), you're actually selecting which ports can do what and mapping them to a vendors standard naming convention (using a transformation that was defined in the device profile) for that kind of port.
+
+So, in our case, I'd like the first 6 ports to be available as my spine connections, and use transformation #1 which was the default transformation present in the pre-built vQFX device profile. Let's select those:
+
+![interface_map4](/images/juniper/juniper_apstra_2/interface_map4.jpg)
+
+The remaining 6 ports are now chosen for my host/server connections:
+
+![interface_map5](/images/juniper/juniper_apstra_2/interface_map5.jpg)
+
+Finally, as a confirmation, if you scroll down a bit during the interface map creation, you can select any port to see a summary of what it would look like when actually deployed. I've selected port 1, which tells me it is port #1 of panel #1, and it is named xe-0/0/0.
+
+![interface_map6](/images/juniper/juniper_apstra_2/interface_map6.jpg)
+
+For our spine interface map, a similar process can be followed. In this case, there is just one port group with all 12 ports, and we select all of them with the same default transformation #1 from the pre-built vQFX device profile.
+
+![interface_map7](/images/juniper/juniper_apstra_2/interface_map7.jpg)
+
 ### Putting it all together to build a rack
 ## Designing a data center template
 ## References
