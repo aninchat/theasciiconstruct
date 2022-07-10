@@ -3,7 +3,7 @@ title: "Juniper Apstra Part I - Introducing a true IBNS"
 date: 2022-06-30
 draft: false
 tags: [juniper, apstra, vxlan, bgp, evpn, jncia-dc, jncis-dc, jncip-dc]
-description:
+description: This post serves as an introduction to Apstra - we'll look at what a true IBN system is, how relational and graph databases are different (and why graph databases are ideal for network infrastructure), concluding with some general workflows in Apstra.
 ---
 With this post, we kick off a new series based on Juniper Apstra. This post serves as an introduction to Apstra - we'll look at what a true IBN system is, how relational and graph databases are different (and why graph databases are ideal for network infrastructure), concluding with some general workflows in Apstra.
 <!--more-->

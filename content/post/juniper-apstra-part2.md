@@ -1,16 +1,14 @@
 ---
 title: "Juniper Apstra Part II - Building a data center rack"
-date: 2022-07-05
-draft: true
+date: 2022-07-10
+draft: false
 tags: [juniper, apstra, vxlan, bgp, evpn, jncia-dc, jncis-dc, jncip-dc]
-description:
+description: In this post, we'll start designing the building blocks for our data center deployment with Juniper Apstra. We'll look at how to design a rack.
 ---
-In this post, we'll start designing the building blocks for our data center deployment with Juniper Apstra. We'll look at how to design a rack, and build a data center template.
+In this post, we'll start designing the building blocks for our data center deployment with Juniper Apstra. We'll look at how to design a rack.
 <!--more-->
 
 ## Introduction
-
-In this post, we'll start designing the building blocks for our data center deployment with Juniper Apstra. We'll look at how to design a rack, and build a data center template (that is eventually fed into a blueprint).
 
 Designing a rack is a fairly involved process. To be completely thorough, we're going to define new logical devices, create interface maps for these and then put it all together to build a rack. Naturally, some of these terms (logical devices, interface maps and so on) are Apstra specific - not to worry, we'll break it all down and understand what these are and how they are used. 
 
@@ -18,7 +16,7 @@ Before we dive into this, I'd like to talk about why Apstra does things this way
 
 When you're building out a data center (physically), you'd know that there are a lot of things that simply repeat. Racks are usually identical - or at best you have a few types of racks servicing specific things, and those types of racks repeat. This can include how many leafs per rack, the redundancy model is usually common across the organization, how many servers and so on. You're typically buying identical physical racks as well (like a 42RU rack) and so on. 
 
-This repeatability also drives consistency - the more "unique" data points you add in your network, the more complex it becomes. And complexity more potential outages, slower time to resolution when issues do arise. Simple is good. 
+This repeatability also drives consistency - the more "unique" data points you add in your network, the more complex it becomes. And complexity means more potential outages, slower time to resolution when issues do arise. Simple is good. 
 
 Apstra just took these repeatable units and made logical, abstracted models of these. It's a simple, natural extension of how your physical data center would look, which makes it so easy to work with, and understand what Apstra is doing and why.
 
@@ -182,7 +180,7 @@ You can now select a port, a subset of ports or all the ports to associate prope
 
 ![new_device_profile4](/images/juniper/juniper_apstra_2/new_device_profile4.jpg)
 
-You also need to associate a "transformation" against the port. This is how the interface naming is actually generated (which, as you can imagine, can be vastly different from vendor to vendor), as well as the speed of the interface. Cliking on 'Add new transformation' lets you do this. 
+You also need to associate a "transformation" against the port. This is how the interface naming is actually generated (which, as you can imagine, can be vastly different from vendor to vendor), as well as the speed of the interface. Clicking on 'Add new transformation' lets you do this. 
 
 ![new_device_profile5](/images/juniper/juniper_apstra_2/new_device_profile5.jpg)
 
@@ -202,7 +200,7 @@ From the UI, this is found under 'Design' again. Like I said, an interface map j
 
 ![interface_map1](/images/juniper/juniper_apstra_2/interface_map1.jpg)
 
-For our case, we're going to create two interface maps - one for the vQFX leaf and another for the vQFX spine. Starting with the leaf, we have our leaf logical device and the vQFX device profile as the input. Once this is done, there is some additional selection that needs to be done - this is the port selection for the port groups that were created within the logical device:
+For our case, we're going to create two interface maps - one for the vQFX leaf and another for the vQFX spine. Starting with the leaf, we have our leaf logical device and the vQFX device profile as the input. Once this is done, there is some additional selection that needed - this is the port selection for the port groups that were created within the logical device:
 
 ![interface_map2](/images/juniper/juniper_apstra_2/interface_map2.jpg)
 
@@ -277,7 +275,10 @@ And finally, you can click on 'Create' to create this rack. This is what it look
 
 ![vqfx_rack8](/images/juniper/juniper_apstra_2/vqfx_rack8.jpg)
 
-This visual representation of your rack is so cool! It shows you exactly what you built, how it looks like, and if you scroll further down, it shows you each element that was used to build this entire rack.
+This visual representation of your rack is so cool! It shows you exactly what you built, what it looks like, and if you scroll further down, it shows you each element that was used to build this entire rack.
 
-## Designing a data center template
+In the next post, we're going to build a template, and then stage and deploy our data center.
+
 ## References
+
+1. [Apstra 4.1 documentation](https://www.juniper.net/documentation/us/en/software/apstra4.1/apstra-user-guide/topics/topic-map/get-started.html)
