@@ -1,7 +1,7 @@
 ---
 title: "Cisco's NXOS EVPN Hybrid mode - interoperability with Asymmetric VTEPs"
 date: 2022-12-18
-draft: true
+draft: false
 tags: [containerlab, junos, bgp, vxlan, evpn, cisco, nxos, multivendor]
 description: "In this post, we pull back the curtain on this new NXOS EVPN Hybrid mode and understand how it enables interoperability with Asymmetric VTEPs."
 ---
