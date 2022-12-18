@@ -18,6 +18,276 @@ Cisco gave this a fancy name - EVPN Hybrid mode. Or you know, maybe just call it
 
 ## Understanding why Asymmetric IRB does not work on NXOS
 
+For this, let's consider communication between h1 and h4. We'll configure leaf1 and leaf3 for Asymmetric IRB - this implies that all VLANs, VNIs and IRB interfaces exist on both leafs. In our case, this means VLAN 100, VNI 10100, VLAN 200, VNI 10200 and its respective IRB interfaces are configured on both leaf1 and leaf3. 
+
+### Configuration
+
+For leaf1, which is running NXOS, the relevant configuration is as follows:
+
+```
+nv overlay evpn
+feature bgp
+feature fabric forwarding
+feature interface-vlan
+feature vn-segment-vlan-based
+feature nv overlay
+!
+fabric forwarding anycast-gateway-mac 000a.000a.000a
+vlan 1,100,200,300
+vlan 100
+  vn-segment 10100
+vlan 200
+  vn-segment 10200
+!
+route-map allow-loopback permit 10
+  match interface loopback0 
+!
+interface Vlan100
+  no shutdown
+  ip address 10.100.100.254/24
+  fabric forwarding mode anycast-gateway
+!
+interface Vlan200
+  no shutdown
+  ip address 10.100.200.254/24
+  fabric forwarding mode anycast-gateway
+!
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  advertise virtual-rmac
+  source-interface loopback0
+  member vni 10100
+    ingress-replication protocol bgp
+  member vni 10200
+    ingress-replication protocol bgp
+!
+interface loopback0
+  ip address 192.0.2.1/32
+!
+router bgp 65421
+  router-id 192.0.2.1
+  log-neighbor-changes
+  address-family ipv4 unicast
+    redistribute direct route-map allow-loopback
+    maximum-paths 4
+  address-family l2vpn evpn
+    advertise-pip
+  template peer evpn
+    update-source loopback0
+    ebgp-multihop 2
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  neighbor 192.0.2.11
+    inherit peer evpn
+    remote-as 65500
+  neighbor 192.0.2.22
+    inherit peer evpn
+    remote-as 65500
+  neighbor 198.51.100.1
+    remote-as 65500
+    address-family ipv4 unicast
+  neighbor 198.51.100.9
+    remote-as 65500
+    address-family ipv4 unicast
+evpn
+  vni 10100 l2
+    rd 192.0.2.1:100
+    route-target import 100:100
+    route-target export 100:100
+  vni 10200 l2
+    rd 192.0.2.1:200
+    route-target import 200:200
+    route-target export 200:200
+```
+
+On leaf3, which is running Junos OS, we create routing-instances of type mac-vrf - one routing-instance per VLAN since we're enabling it for VLAN-based service type. 
+
+```
+admin@leaf3# show 
+
+interfaces {
+    irb {
+        unit 100 {
+            virtual-gateway-accept-data;
+            family inet {
+                address 10.100.100.252/24 {
+                    virtual-gateway-address 10.100.100.254;
+                }
+            }
+            virtual-gateway-v4-mac 00:0a:00:0a:00:0a;
+        }
+        unit 200 {
+            virtual-gateway-accept-data;
+            family inet {
+                address 10.100.200.252/24 {
+                    virtual-gateway-address 10.100.200.254;
+                }
+            }
+            virtual-gateway-v4-mac 00:0a:00:0a:00:0a;
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 192.0.2.3/32;
+            }
+        }
+    }
+}
+policy-options {
+    policy-statement ECMP {
+        then {
+            load-balance per-flow;
+        }
+    }
+    policy-statement allow-loopback {
+        from interface lo0.0;
+        then accept;
+    }
+}
+routing-instances {
+    v100_mac_vrf {
+        instance-type mac-vrf;
+        protocols {
+            evpn {
+                encapsulation vxlan;    
+                default-gateway do-not-advertise;
+                extended-vni-list all;
+            }
+        }
+        vtep-source-interface lo0.0;
+        service-type vlan-based;
+        interface xe-0/0/2.0;
+        route-distinguisher 192.0.2.3:100;
+        vrf-target target:100:100;
+        vlans {
+            v100 {
+                vlan-id 100;
+                l3-interface irb.100;
+                vxlan {
+                    vni 10100;
+                }
+            }
+        }
+    }
+    v200_mac_vrf {
+        instance-type mac-vrf;
+        protocols {
+            evpn {
+                encapsulation vxlan;
+                default-gateway do-not-advertise;
+                extended-vni-list all;
+            }
+        }
+        vtep-source-interface lo0.0;
+        service-type vlan-based;
+        interface xe-0/0/3.0;
+        route-distinguisher 192.0.2.3:200;
+        vrf-target target:200:200;
+        vlans {
+            v200 {
+                vlan-id 200;
+                l3-interface irb.200;
+                vxlan {
+                    vni 10200;
+                }
+            }
+        }
+    }
+}
+routing-options {
+    router-id 192.0.2.3;
+    autonomous-system 65423;            
+    forwarding-table {
+        export ECMP;
+    }
+}
+protocols {
+    bgp {
+        group underlay {
+            type external;
+            family inet {
+                unicast;
+            }
+            export allow-loopback;
+            peer-as 65500;
+            multipath;
+            neighbor 198.51.100.5;
+            neighbor 198.51.100.13;
+        }
+        group overlay {
+            type external;
+            multihop;
+            local-address 192.0.2.3;
+            family evpn {
+                signaling;
+            }
+            peer-as 65500;
+            neighbor 192.0.2.11;
+            neighbor 192.0.2.22;
+        }
+    }
+}
+```
+
+Since each leaf is configured with all IRBs, every VLAN is essentially directly connected to each leaf. This implies that both leaf1 and leaf3 can directly ARP for any host on VLAN100 or VLAN200.
+
+### Packet walk to visualize the problem
+
+h1 has 10.100.100.254 as its default gateway. When pinging h4, it knows that the destination is in a different subnet and it needs to send the packet to its default gateway. ARP process provides the IP-MAC binding for 10.100.100.254 and h1 sends the ICMP request to leaf1.
+
+On leaf1, since the destination MAC address is owned by it, a route lookup is done for 10.100.200.4. This hits the directly connected subnet route:
+
+```
+leaf1# show ip route 10.100.200.4
+IP Route Table for VRF "default"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+10.100.200.0/24, ubest/mbest: 1/0, attached
+    *via 10.100.200.254, Vlan200, [0/0], 00:29:41, direct
+```
+
+leaf1 can now ARP for the destination directly. Since this fabric is configured for Ingress Replication, leaf1 uses its flood list for VLAN 200 to package the broadcast ARP into a unicast VXLAN packet and send it to every VTEP (PE) in the flood list. This includes leaf3.
+
+When leaf3 receives this, it decapsulates the VXLAN packet and floods the ARP to all local ports in VLAN 200. h4 now receives this ARP packet, it builds its local ARP cache and sends an ARP reply back.
+
+Let's take a look at this ARP reply:
+
+![arp_reply_h4](/images/multivendor/nxos_evpn_hybrid_mode/arp_reply_h4.jpg)
+
+Seems like an ordinary ARP reply, but carefully observe the destination MAC address in the Ethernet header. This is the anycast gateway MAC address. When this ARP reply reaches leaf2, it will consume this packet since it owns the anycast MAC address and leaf1 will never see this ARP reply. Because of this, the ARP entry for 10.100.200.4 will always remain incomplete, and leaf1 has no knowledge of how to forward traffic to this destination.
+
+```
+leaf1# show ip arp
+
+Flags: * - Adjacencies learnt on non-active FHRP router
+       + - Adjacencies synced via CFSoE
+       # - Adjacencies Throttled for Glean
+       CP - Added via L2RIB, Control plane Adjacencies
+       PS - Added via L2RIB, Peer Sync
+       RO - Re-Originated Peer Sync Entry
+       D - Static Adjacencies attached to down interface
+
+IP ARP Table for context default
+Total number of entries: 4
+Address         Age       MAC Address     Interface       Flags
+198.51.100.1    00:09:48  5295.1e00.1b08  Ethernet1/1              
+198.51.100.9    00:09:29  520a.3600.1b08  Ethernet1/2              
+10.100.100.1    00:02:00  aac1.ab3e.c444  Vlan100                  
+10.100.200.4    00:00:03  INCOMPLETE      Vlan200 
+```
+
+For Asymmetric IRB to work, the VTEP must build its ARP table from EVPN Type-2 MAC+IP routes. Without this functionality, Asymmetric IRB will fail, as we can clearly see. And it appears that NXOS does not do this, which is why it does not support Asymmetric IRB.
+
+The following packet walk provides an easy to understand visual representation of the failure:
+
+![packetwalk](/images/multivendor/nxos_evpn_hybrid_mode/packetwalk.jpg)
+
 ## Enabling Symmetric IRB between NXOS leafs
 
 Before we look at how EVPN Hybrid mode works, let's first consider Symmetric IRB between leaf1 and leaf2 (both NXOS). The goal is to get h1 to talk to h2 (communication between VLAN 100 and VLAN 200). On the NXOS leafs, Symmetric IRB requires the following sample configuration (consider leaf1 as an example):
@@ -348,7 +618,7 @@ rtt min/avg/max/mdev = 11.968/19.167/29.789/6.750 ms
 
 ## Configuring leaf3 for Asymmetric IRB
 
-Let's configure leaf3 now for Asymmetric IRB. This implies that IRB interface for both VLAN100 and VLAN200 exist on leaf3, along with their corresponding L2VNIs. Routing-instances are created for both VLAN100 and VLAN200 with service-type VLAN-based.
+Let's configure leaf3 now for Asymmetric IRB. This implies that the IRB interface for both VLAN100 and VLAN200 exist on leaf3, along with their corresponding L2VNIs. Routing-instances are created for both VLAN100 and VLAN200 with service-type VLAN-based.
 
 ```
 admin@leaf3# show
@@ -540,7 +810,7 @@ Physical interface: irb, Enabled, Physical link is Up
 
 Our primary test is to check connectivity between h2 and h3 (since they are in different subnets - h2 is in VLAN200 and h3 is in VLAN100).
 
-h3 can ping its default gateway (10.100.100.254, which exists on leaf3 as since it is an anycast gateway):
+h3 can ping its default gateway (10.100.100.254, which exists on leaf3 since it is an anycast gateway):
 
 ```
 root@h3:~# ping 10.100.100.254
