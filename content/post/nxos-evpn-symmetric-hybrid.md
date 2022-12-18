@@ -330,6 +330,7 @@ IP Route Table for VRF "Tenant1"
 
 h1 should now be able to ping h2 and a data-plane captures shows that the VNI in the VXLAN header is the L3VNI:
 
+```
 root@h1:~# ping 10.100.200.2
 PING 10.100.200.2 (10.100.200.2) 56(84) bytes of data.
 64 bytes from 10.100.200.2: icmp_seq=1 ttl=62 time=19.5 ms
@@ -341,6 +342,7 @@ PING 10.100.200.2 (10.100.200.2) 56(84) bytes of data.
 --- 10.100.200.2 ping statistics ---
 5 packets transmitted, 5 received, 0% packet loss, time 9ms
 rtt min/avg/max/mdev = 11.968/19.167/29.789/6.750 ms
+```
 
 ![l3vni](/images/multivendor/nxos_evpn_hybrid_mode/l3vni.jpg)
 
