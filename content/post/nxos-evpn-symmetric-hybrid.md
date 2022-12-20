@@ -260,7 +260,7 @@ Let's take a look at this ARP reply:
 
 ![arp_reply_h4](/images/multivendor/nxos_evpn_hybrid_mode/arp_reply_h4.jpg)
 
-Seems like an ordinary ARP reply, but carefully observe the destination MAC address in the Ethernet header. This is the anycast gateway MAC address. When this ARP reply reaches leaf2, it will consume this packet since it owns the anycast MAC address and leaf1 will never see this ARP reply. Because of this, the ARP entry for 10.100.200.4 will always remain incomplete, and leaf1 has no knowledge of how to forward traffic to this destination.
+Seems like an ordinary ARP reply, but carefully observe the destination MAC address in the Ethernet header. This is the anycast gateway MAC address. When this ARP reply reaches leaf3, it will consume this packet since it owns the anycast MAC address and leaf1 will never see this ARP reply. Because of this, the ARP entry for 10.100.200.4 will always remain incomplete, and leaf1 has no knowledge of how to forward traffic to this destination.
 
 ```
 leaf1# show ip arp
