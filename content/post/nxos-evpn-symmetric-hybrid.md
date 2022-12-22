@@ -290,7 +290,7 @@ The following packet walk provides an easy to understand visual representation o
 
 ## Enabling Symmetric IRB between NXOS leafs
 
-Before we look at how EVPN Hybrid mode works, let's first consider Symmetric IRB between leaf1 and leaf2 (both NXOS). The goal is to get h1 to talk to h2 (communication between VLAN 100 and VLAN 200). On the NXOS leafs, Symmetric IRB requires the following sample configuration (consider leaf1 as an example). First, a VLAN is created and the L3VNI is mapped it. This VNI is configured for the customer VRF, which call 'Tenant1' here:
+Before we look at how EVPN Hybrid mode works, let's first consider Symmetric IRB between leaf1 and leaf2 (both NXOS). The goal is to get h1 to talk to h2 (communication between VLAN 100 and VLAN 200). On the NXOS leafs, Symmetric IRB requires the following sample configuration (consider leaf1 as an example). First, a VLAN is created and the L3VNI is mapped it. This VNI is configured for the customer VRF, which we'll call 'Tenant1':
 
 ```
 vlan 300
@@ -306,9 +306,9 @@ vrf context Tenant1
     route-target export 65421:300 evpn
 ```
 
-An anycast MAC address is configured on all the leafs (using '*fabric forwarding anycast-gateway-mac*'), and the IRB interfaces are enabled with '*fabric forwarding mode anycast-gateway*'. This enables the anycast gateway functionality on the IRB interface. Each leaf is also configured for it's respective VLAN/BD under EVPN along with the import/export route-targets (these are the MAC VRF route-targets for the L2 domain).
+An anycast MAC address is configured on all the leafs (using '*fabric forwarding anycast-gateway-mac*'), and the IRB interfaces are enabled with '*fabric forwarding mode anycast-gateway*'. This enables the anycast gateway functionality on the IRB interface. Each leaf is also configured for its respective VLAN/BD under EVPN along with the import/export route-targets (these are the MAC VRF route-targets for the L2 domain).
 
-You also need to create an IRB interface for the VLAN mapped to the L3VNI and it is configured to be in the customer VRF.
+You also need to create an IRB interface for the L3VNI VLAN and it is configured to be in the customer VRF.
 
 ```
 fabric forwarding anycast-gateway-mac 000a.000a.000a
