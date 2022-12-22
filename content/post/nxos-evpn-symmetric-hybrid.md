@@ -252,7 +252,7 @@ IP Route Table for VRF "default"
     *via 10.100.200.254, Vlan200, [0/0], 00:29:41, direct
 ```
 
-leaf1 can now ARP for the destination directly. Since this fabric is configured for Ingress Replication, leaf1 uses its flood list for VLAN 200 to package the broadcast ARP into a unicast VXLAN packet and send it to every VTEP (PE) in the flood list. This includes leaf3.
+leaf1 can now ARP for the destination directly. Since this fabric is configured for Ingress Replication (default on Junos OS is Ingress Replication and we have explictly configured Ingress Replication on NXOS), leaf1 uses its flood list for VLAN 200 to package the broadcast ARP into a unicast VXLAN packet and send it to every VTEP (PE) in the flood list. This includes leaf3.
 
 When leaf3 receives this, it decapsulates the VXLAN packet and floods the ARP to all local ports in VLAN 200. h4 now receives this ARP packet, it builds its local ARP cache and sends an ARP reply back.
 
@@ -290,28 +290,11 @@ The following packet walk provides an easy to understand visual representation o
 
 ## Enabling Symmetric IRB between NXOS leafs
 
-Before we look at how EVPN Hybrid mode works, let's first consider Symmetric IRB between leaf1 and leaf2 (both NXOS). The goal is to get h1 to talk to h2 (communication between VLAN 100 and VLAN 200). On the NXOS leafs, Symmetric IRB requires the following sample configuration (consider leaf1 as an example):
+Before we look at how EVPN Hybrid mode works, let's first consider Symmetric IRB between leaf1 and leaf2 (both NXOS). The goal is to get h1 to talk to h2 (communication between VLAN 100 and VLAN 200). On the NXOS leafs, Symmetric IRB requires the following sample configuration (consider leaf1 as an example). First, a VLAN is created and the L3VNI is mapped it. This VNI is configured for the customer VRF, which call 'Tenant1' here:
 
 ```
-nv overlay evpn
-feature bgp
-feature fabric forwarding
-feature interface-vlan
-feature vn-segment-vlan-based
-feature lldp
-feature nv overlay
-!
-fabric forwarding anycast-gateway-mac 000a.000a.000a
-!
-vlan 1,100,300
-vlan 100
-  vn-segment 10100
 vlan 300
   vn-segment 10300
-!
-route-map allow-loopback permit 10
-  match interface loopback0 
-route-map permit-all permit 10
 !
 vrf context Tenant1
   vni 10300
@@ -321,6 +304,14 @@ vrf context Tenant1
     route-target import 65421:300 evpn
     route-target export 65421:300
     route-target export 65421:300 evpn
+```
+
+An anycast MAC address is configured on all the leafs (using '*fabric forwarding anycast-gateway-mac*'), and the IRB interfaces are enabled with '*fabric forwarding mode anycast-gateway*'. This enables the anycast gateway functionality on the IRB interface. Each leaf is also configured for it's respective VLAN/BD under EVPN along with the import/export route-targets (these are the MAC VRF route-targets for the L2 domain).
+
+You also need to create an IRB interface for the VLAN mapped to the L3VNI and it is configured to be in the customer VRF.
+
+```
+fabric forwarding anycast-gateway-mac 000a.000a.000a
 !
 interface Vlan100
   no shutdown
@@ -332,7 +323,11 @@ interface Vlan300
   no shutdown
   vrf member Tenant1
   ip forward
-!
+```
+
+The L3VNI is enabled under the NVE interface:
+
+```
 interface nve1
   no shutdown
   host-reachability protocol bgp
@@ -341,10 +336,11 @@ interface nve1
   member vni 10100
     ingress-replication protocol bgp
   member vni 10300 associate-vrf
-!
-interface Ethernet1/3
-  switchport access vlan 100
-!
+```
+
+By default, NXOS does not advertise an EVPN Type-5 subnet route (we'll talk about the need for this route at a later point in this blog post). This is done using the 'redistribute direct ...' configuration under the VRF IPv4 unicast address family under BGP:
+
+```
 router bgp 65421
   router-id 192.0.2.1
   log-neighbor-changes
@@ -374,16 +370,7 @@ router bgp 65421
   vrf Tenant1
     address-family ipv4 unicast
       redistribute direct route-map permit-all
-evpn
-  vni 10100 l2
-    rd 192.0.2.1:100
-    route-target import 100:100
-    route-target export 100:100
 ```
-
-As you can see from the above, a new VLAN is created for the L3VNI and the L3VNI is mapped to it. This L3VNI is mapped to an IP VRF (a 1:1 mapping). The VRF is enabled under BGP and all direct routes are distributed under this. The L3VNI must also be enabled under the NVE interface (nve1, in this case). Similar configuration is done on leaf2 as well, with the L3VNI having matching route-targets.
-
-An anycast MAC address is configured on all the leafs (using '*fabric forwarding anycast-gateway-mac*'), and the IRB interfaces are enabled with '*fabric forwarding mode anycast-gateway*'. This enables the anycast gateway functionality on the IRB interface. Each leaf is also configured for it's respective VLAN/BD under EVPN along with the import/export route-targets (these are the MAC VRF route-targets for the L2 domain).
 
 Leaf1 learns h1s MAC address and IPv4 address using ARP/ND. We can initiate a ping from h1 (to its default gateway, 10.100.100.254, which is present on leaf1) to trigger this process.
 
