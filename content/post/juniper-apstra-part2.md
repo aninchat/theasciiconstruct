@@ -7,7 +7,8 @@ description: In this post, we'll start designing the building blocks for our dat
 ---
 In this post, we'll start designing the building blocks for our data center deployment with Juniper Apstra. We'll look at how to design a rack.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction
 
 Designing a rack is a fairly involved process. To be completely thorough, we're going to define new logical devices, create interface maps for these and then put it all together to build a rack. Naturally, some of these terms (logical devices, interface maps and so on) are Apstra specific - not to worry, we'll break it all down and understand what these are and how they are used. 

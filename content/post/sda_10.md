@@ -7,7 +7,8 @@ description: "In this post, we take a detailed look at the L2 handoff feature in
 ---
 In this post, we take a detailed look at the L2 handoff feature in Cisco's SD-Access.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 Fair warning - this is going to be a long, long post. Get yourself some coffee because you're going to be here for a while!

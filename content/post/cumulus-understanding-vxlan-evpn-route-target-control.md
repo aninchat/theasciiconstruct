@@ -7,7 +7,8 @@ description: "In this post, we look at how route-targets extended communities ca
 ---
 In this post, we look at how route-targets extended communities can be used to control VXLAN BGP EVPN routes in Cumulus Linux.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction 
 
 This post assumes that the reader has a general understanding of L2/L3 VNIs and asymmetric/symmetric IRB.

@@ -7,7 +7,8 @@ description: "In this post, we look at LISP dynamic EID - a core construct of LI
 ---
 In this post, we look at LISP dynamic EID - a core construct of LISP host mobility.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 One of the most important characteristics of LISP is the mobility it offers - the next few posts aim at helping understand how this functionality is achieved, starting with dynamic EIDs.

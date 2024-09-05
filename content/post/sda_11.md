@@ -8,7 +8,8 @@ description: "In this post, we look at how an ARP packet flows within a SD-Acces
 ---
 In this post, we look at how an ARP packet flows within a SD-Access fabric.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 This probably should have been one of my first posts for SDA but here we are. I've recently come to realize that there is a lot of misconception about how ARP works within the SDA solution - the defacto answer appears to be that it is a part of BUM traffic (broadcast, unknown unicast, multicast), and thus, it will be flooded (implying that there is a dependency on some form of replication, either head-end or via an underlay multicast infrastructure). 

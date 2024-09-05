@@ -7,7 +7,8 @@ description: "In this post, we look at why SD-Access borders have the anycast IP
 ---
 In this post, we look at why SD-Access borders have the anycast IP addresses configured as loopback addresses.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 Looking at the some of the configuration that is automatically pushed from DNAC, you should spot some very interesting things in there. This post aims to demystify these and help the reader understand why these were needed in the first place, hopefully giving you a better understanding of how the SDA fabric is built. 

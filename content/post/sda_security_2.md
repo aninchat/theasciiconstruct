@@ -7,7 +7,8 @@ description: In this post, we look at microsegmentation in Cisco's SD-Access fab
 ---
 In this post, we look at microsegmentation in Cisco's SD-Access fabric, using SGTs.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 Now that we've covered macro-segmentation in SD-Access, let's take a look at micro-segmentation. The goal of this post is to demystify the following aspects of segmentation in SDA:

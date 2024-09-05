@@ -7,7 +7,8 @@ description: In this post, we look at how an Access Point is onboarded in a SD-A
 ---
 In this post, we look at how an Access Point is onboarded in a SD-Access fabric.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 This post will continue to build on the topology that was used for Part I of this series.

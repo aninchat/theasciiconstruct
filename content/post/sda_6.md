@@ -7,7 +7,8 @@ description: "In this post, we look at SMRs and how these are essential for a ho
 ---
 In this post, we look at SMRs and how these are essential for a host mobility event, within the LISP architecture.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 We start this post with the assumption that a host mobility event has occurred (see previous post for details on host mobility) and that the EID 1.1.1.1/24 is moved from behind xTR2 to behind xTR6. 

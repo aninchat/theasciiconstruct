@@ -5,8 +5,11 @@ draft: false
 tags: [juniper, apstra, vxlan, bgp, evpn, jncia-dc, jncis-dc, jncip-dc]
 description: This post serves as an introduction to Apstra - we'll look at what a true IBN system is, how relational and graph databases are different (and why graph databases are ideal for network infrastructure), concluding with some general workflows in Apstra.
 ---
+
 With this post, we kick off a new series based on Juniper Apstra. This post serves as an introduction to Apstra - we'll look at what a true IBN system is, how relational and graph databases are different (and why graph databases are ideal for network infrastructure), concluding with some general workflows in Apstra.
 <!--more-->
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction
 
 It's that time again - time for a new series! And I am really excited for this one. I am going to be kicking off a Juniper Apstra series with this first post. This post will look at what Intent Based Networking truly is, and what an Intent Based Networking System (IBNS) looks like.

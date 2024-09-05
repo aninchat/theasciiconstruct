@@ -7,7 +7,8 @@ description: "In this post, we look at BGP on Junos OS and a typical BGP configu
 ---
 In this post, we look at BGP on Junos OS and a typical BGP configuration for the underlay, for a 3-stage Clos fabric. We also introduce BGP unnumbered, which is a great way of building the underlay, without the need of any IP addressing. 
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 The goal of these introductory Junos posts is to get familiar with some basic configuration for commonly used protocols, since it may be a bit of a transition if you're coming from the Cisco/Arista world. BGP is a big one, especially on the Data Center front - it is most often used as the underlay and overlay (for EVPN). To that end, it is extremely important to understand how to configure and process BGP on Junos OS.

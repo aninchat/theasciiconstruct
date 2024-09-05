@@ -7,7 +7,8 @@ description: "In this post, we look at VXLAN routing with symmetric IRB and mult
 ---
 In this post, we look at VXLAN routing with symmetric IRB and multi-tenancy on Cumulus Linux.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction
 
 Now that we've configured and verified a working asymmetric VXLAN routing solution in the previous post, let's take a look at the greener side of the grass (well, it depends on where you stand) - symmetric IRB. This post is going to introduce VRFs into the picture that pave the way for multi-tenancy in VXLAN solutions. 

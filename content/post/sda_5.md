@@ -7,7 +7,8 @@ description: "In this post, we look at an actual LISP host mobility event and wh
 ---
 In this post, we look at an actual LISP host mobility event and what happens behind the scenes to make this work.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 Continuing on from the previous post, we take a look at actual host mobility events and how the LISP infrastructure facilitates this. Our goal for this post is to have the simulated host (1.1.1.1) move from behind xTR2 to behind xTR4 (simulated via R10). A working assumption used in the post is that there is no active traffic destined for the host that is moving (we will look at this in the SMR post).

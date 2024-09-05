@@ -7,7 +7,8 @@ description: In this post, we will look at a peculiar case of a SGACL not denyin
 ---
 In this post, we will look at a peculiar case of a SGACL not denying traffic between two hosts in a SD-Access fabric.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 The topology in use is as follows:

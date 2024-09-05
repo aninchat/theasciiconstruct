@@ -7,7 +7,8 @@ description: In this post, we will look at macro segmentation in Cisco's SD-Acce
 ---
 In this post, we will look at macro segmentation in Cisco's SD-Access.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introudction and topology
 
 Two big things standout with SD-Access - the segmentation story and native wireless integration. This post (and the next) is going to look at segmentation and how that is achieved within the SD-Access solution. 

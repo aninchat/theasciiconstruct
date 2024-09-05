@@ -7,7 +7,8 @@ description: "In this post, we look at why BSR and Auto-RP do not work with a SD
 ---
 In this post, we look at why BSR and Auto-RP do not work with a SD-Access fabric.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 This is the topology that we'll be working with for this blog post:

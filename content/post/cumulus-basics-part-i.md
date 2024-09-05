@@ -8,7 +8,8 @@ description: "This first blog on Cumulus introduces the reader to the basics of 
 This first blog on Cumulus introduces the reader to the basics of the operating system and Cumulus' NCLU.
 
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction
 
 This is going to be a new mini series that we will do in preparation for the first open networking certification that Cumulus Networks introduced,see [here](https://education.cumulusnetworks.com/certification-exam-registration). 

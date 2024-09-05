@@ -7,7 +7,8 @@ description: "In this post, we look at various DHCP challenges in Cisco's SD-Acc
 ---
 In this post, we look at various DHCP challenges in Cisco's SD-Access fabric and how it is solved.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 Remember that in SD-Access, we do not use vanilla LISP. To achieve macro segmentation, multi-instance LISP (VRF-aware LISP) is used. However, this poses a problem for DHCP. Consider the following topology for this (this topology is also a simple example of SD-Access design):

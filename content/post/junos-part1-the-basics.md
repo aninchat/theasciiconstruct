@@ -7,7 +7,8 @@ description: "In this post, we take an introductory look at the operating system
 ---
 In this post, we take an introductory look at the operating system used in Juniper platforms, called Junos OS. This post serves as an introduction to the CLI. We also cover basic bridging.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 As a new user of the Junos OS, I thought I'd take this opportunity to blog about what I generally start with when learning a new platform/OS. It's important to understand the basics before moving onto the more complicated technologies. For me, the basics have always included L2 protocols like STP, some form of link aggregation (LAG), at least one IGP, and then finally, understand the tools available to troubleshoot a problem on the platform. Naturally, you also need to get comfortable with navigating the CLI. 

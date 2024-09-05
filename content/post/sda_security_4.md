@@ -7,7 +7,8 @@ description: In this post, we will look at how to leverage SXP tunnels in ISE to
 ---
 In this post, we will look at how to leverage SXP tunnels in ISE to achieve a specific use case.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction
 
 Using SGTs, we were able to control communication between endpoints in the same VN. But what happens when traffic from these endpoints leaves the fabric? At the borders, the packet is decapsulated and since the outer header is stripped, along with the VXLAN header, we lose all SGT information.

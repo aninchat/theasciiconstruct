@@ -7,7 +7,8 @@ description: "In this post, we pull back the curtain on this new NXOS EVPN Hybri
 ---
 In this post, we pull back the curtain on this new NXOS EVPN Hybrid mode and understand how it enables interoperability with Asymmetric VTEPs.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## tl;dr
 
 Cisco gave this a fancy name - EVPN Hybrid mode. Or you know, maybe just call it Asymmetric IRB? Because that's what it is behind the scenes.
@@ -1060,4 +1061,3 @@ As you can see, the source for 10.100.100.3 is 'am_l2rib' and the 'CP' flag is s
 >For IP-to-MAC bindings learned via EVPN, an implementation may choose to import these bindings directly to the respective forwarding table (such as an adjacency/next-hop table) as opposed to importing them to ARP or ND protocol tables
 
 It's a little sneaky, and easy to miss if you don't know where to look. And perhaps the reason it is implemented this way is to ensure that Asymmetric IRB continues to be natively unsupported on NXOS, but it will work (for interoperability reasons) if you have Symmetric IRB with L3VNIs, and the IRBs are configured in this EVPN Hybrid mode.
-

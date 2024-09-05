@@ -7,7 +7,8 @@ description: In this post, we look at how a typical user gets authenticated and 
 ---
 In this post, we look at how a typical user gets authenticated and authorized in a SD-Access fabric.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 The premise of this design discussion is that the network is separated into several users from different organizations that come and work out of your campus. The requirement is to have these users authenticated, authorized via ISE (with AD integrated) and then once they are found to be posture compliant, they should be placed into their organizational specific VLAN. 

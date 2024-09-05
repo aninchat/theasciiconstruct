@@ -7,7 +7,8 @@ description: "In this post, we will look at an introduction to routing on Cumulu
 ---
 In this post, we will look at an introduction to routing on Cumulus Linux, with static routing and OSPF.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction
 
 Initially, Cumulus OS used the Quagga suite for routing capability. However, more recently, there has been a general adoption of a fork of Quagga called FRRouting (FRR) - Cumulus now includes FRR instead of Quagga. Like always, you can either edit the files directly or using Cumulus' NCLU to enable the respective routing features as well. 

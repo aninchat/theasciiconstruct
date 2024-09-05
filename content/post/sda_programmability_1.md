@@ -7,7 +7,8 @@ description: In this post, we look at how to generate a Nornir network inventory
 ---
 In this post, we look at how to generate a Nornir network inventory from DNA-Center, using Python.
 <!--more-->
-
+{{< buymeacoffee slug="aninchat" >}}  
+<br />
 ## Introduction and topology
 
 I hear that absence makes the heart grow fonder. Did you miss me?
